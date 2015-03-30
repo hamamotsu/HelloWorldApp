@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -35,6 +37,7 @@ namespace HelloWorldApp.DataModel
         /// <summary>
         /// メッセージを取得または設定します
         /// </summary>
+        [IgnoreDataMember]
         public string Message
         {
             get { return this.message; }
@@ -45,6 +48,7 @@ namespace HelloWorldApp.DataModel
         /// <summary>
         /// 時間帯を取得または設定します。
         /// </summary>
+        [IgnoreDataMember]
         public string Time
         {
             get { return this.time; }
@@ -95,6 +99,22 @@ namespace HelloWorldApp.DataModel
                 defaultInstance = new HelloWorldModel();
             }
             return defaultInstance;
+        }
+
+        /// <summary>
+        /// デフォルトのインスタンスをStreamへ保存します
+        /// </summary>
+        /// <param name="s">保存用のストリーム</param>
+        public static void SaveToStream(Stream s)
+        {
+            var serializer = new DataContractSerializer(typeof(HelloWorldModel));
+            serializer.WriteObject(s, GetDefault());
+        }
+
+        public static void LoadFromStream(Stream s)
+        {
+            var serializer = new DataContractSerializer(typeof(HelloWorldModel));
+            defaultInstance = serializer.ReadObject(s) as HelloWorldModel;
         }
     }
 }

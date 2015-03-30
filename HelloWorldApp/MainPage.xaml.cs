@@ -67,8 +67,27 @@ namespace HelloWorldApp
         /// セッション。ページに初めてアクセスするとき、状態は null になります。</param>
         private void navigationHelper_LoadState(object sender, LoadStateEventArgs e)
         {
+            var model = HelloWorldModel.GetDefault();
+            var pageState = e.PageState;
+
+            //中断データがある場合は読み込む
+            if (pageState != null)
+            {
+                object time = null;
+                if (pageState.TryGetValue("Time", out time))
+                {
+                    model.Time = (string)time;
+                }
+
+                object message = null;
+                if (pageState.TryGetValue("Message", out message))
+                {
+                    model.Message = (string)message;
+                }
+            }
+
             //DefaultViewModelのHelloWorldModelをキーにしてHelloWorldModelのインスタンスを設定
-            this.DefaultViewModel["HelloWorldModel"] = HelloWorldModel.GetDefault();
+            this.DefaultViewModel["HelloWorldModel"] = model;
         }
 
         /// <summary>
@@ -81,6 +100,10 @@ namespace HelloWorldApp
         ///。</param>
         private void navigationHelper_SaveState(object sender, SaveStateEventArgs e)
         {
+            // HelloWorldModelのTimeとMessageをpageStateに保存する
+            var model = HelloWorldModel.GetDefault();
+            e.PageState["Time"] = model.Time;
+            e.PageState["Message"] = model.Message;
         }
 
         #region NavigationHelper の登録
